@@ -1,0 +1,93 @@
+DROP TABLE IF EXISTS api;
+CREATE TABLE IF NOT EXISTS api (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    base_url TEXT NOT NULL,
+    require_auth BOOLEAN NOT NULL DEFAULT false,
+    require_csrf BOOLEAN NOT NULL DEFAULT false,
+    require_cookies BOOLEAN NOT NULL DEFAULT false,
+    last_response TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+DROP TABLE IF EXISTS headers;
+CREATE TABLE IF NOT EXISTS headers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    header_key TEXT NOT NULL,
+    header_value TEXT NOT NULL,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS params;
+CREATE TABLE IF NOT EXISTS params (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    param_key TEXT NOT NULL,
+    param_value TEXT NOT NULL,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS cookies;
+CREATE TABLE IF NOT EXISTS cookies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    cookie_key TEXT NOT NULL,
+    cookie_value TEXT NOT NULL,
+    csrf_token TEXT,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS auth;
+CREATE TABLE IF NOT EXISTS auth (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    auth_type TEXT NOT NULL,
+    auth_value TEXT NOT NULL,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS requests;
+CREATE TABLE IF NOT EXISTS requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    method TEXT NOT NULL,
+    endpoint TEXT NOT NULL,
+    request_body TEXT,
+    response_body TEXT,
+    status_code INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS responses;
+CREATE TABLE IF NOT EXISTS responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_id INTEGER NOT NULL,
+    response_body TEXT,
+    status_code INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS logs;
+CREATE TABLE IF NOT EXISTS logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    log_message TEXT NOT NULL,
+    log_level TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS test_cases;
+CREATE TABLE IF NOT EXISTS test_cases (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    test_name TEXT NOT NULL,
+    test_description TEXT,
+    expected_status_code INTEGER,
+    expected_response_body TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS environments;
+CREATE TABLE IF NOT EXISTS environments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_id INTEGER NOT NULL,
+    env_name TEXT NOT NULL,
+    env_value TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (api_id) REFERENCES api(id) ON DELETE CASCADE
+);
