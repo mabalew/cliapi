@@ -1,6 +1,6 @@
 # CLIAPI — User Guide
 
-This guide explains how to use your `console Postman` (CLI-based API tester) built on `sqlite3` + `curl`. It assumes you already have the scripts installed (e.g., `cliapi.sh` plus the included parts like `call.sh`) and a project database created (e.g., `cliapi.db`).
+This guide explains how to use your console / CLI-based API tester built on `sqlite3` + `curl`. It assumes you already have the scripts installed (e.g., `cliapi.sh` plus the included parts like `call.sh`) and a project database created (e.g., `cliapi.db`).
 
 ---
 
